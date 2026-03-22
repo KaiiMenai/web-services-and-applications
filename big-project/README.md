@@ -3,3 +3,9 @@
 author: Kyra Menai Hamilton
 
 This folder will contain work for the Web Services and Applications module project.
+
+## To do
+
+- flask app creation
+- project outline
+- api

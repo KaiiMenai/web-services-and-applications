@@ -1,4 +1,4 @@
-# Assignment 4
+# Assignment 4 - GitHub 
 
 # author: Kyra Menai Hamilton
 

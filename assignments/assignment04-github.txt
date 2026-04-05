@@ -5,4 +5,4 @@ This is the file that will be read, modified, and written back to the repository
 The following word will be changed:
 Round 2
 
-# END
+END

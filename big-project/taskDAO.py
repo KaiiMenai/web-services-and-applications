@@ -53,7 +53,7 @@ class TaskDAO:
 
     def create(self, task):
         cursor = self.getcursor()
-        sql=f"insert into task (Task Name, Description, Due Date) values(\"{task.get('title')}\",\"{task.get('description')}\",{task.get('Due Date')})"
+        sql=f"insert into task (Task Name, Description, Due Date) values(\"{task.get('Task Name')}\",\"{task.get('Description')}\",{task.get('Due Date')})"
         print(sql)
         cursor.execute(sql)
 
@@ -66,7 +66,7 @@ class TaskDAO:
 
     def update(self, id, task):
         cursor = self.getcursor()
-        sql=f"update task set title= \"{task.get('title')}\", description=\"{task.get('description')}\", due_date={task.get('due_date')} where id = {id}"
+        sql=f"update task set title= \"{task.get('Task Name')}\", description=\"{task.get('Description')}\", due_date={task.get('Due Date')} where id = {id}"
         print(sql)
         cursor.execute(sql)
         self.connection.commit()

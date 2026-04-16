@@ -1,0 +1,242 @@
+<html>
+    <head>
+        <title> view Books</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+       
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+    <body>
+        <h1>Books</h1>
+        <div> <button id="showCreateButton" onclick="showCreate()">Create</button></div>
+        <div>
+            <table class="table" id="taskTable">
+                <tr>
+                        <th>id</th>
+                        <th>Task Name</th>
+                        <th>
+                            Description
+                        </th>
+                        <th>Price</th>
+                        <th>Update</th>
+                        <th>Delete</th>
+                </tr>
+                
+            </table>
+        </div>
+        <div id='createUpdateForm' style="display: none">
+                <h2><span id="createLabel">Create a</span> <span id="updateLabel">update</span> Task</h2>
+                <input type="hidden" name="id"/>
+                Task Name <input type="text" name="Task Name" /><br/>
+                Description <input type="text" name="Description"/> <br/>
+                Due Date <input type="number" name="Due Date"/> <br/>
+                <span><button id="doCreateButton" onclick="doCreate()">Create</button></span>
+                <span><button id="doUpdateButton" onclick="doUpdate()">Update</button></span>
+        </div>
+    </body>
+    <script>
+    function showCreate(){
+        document.getElementById('showCreateButton').style.display="none"
+        document.getElementById('bookTable').style.display="none"
+        document.getElementById('createUpdateForm').style.display="block"
+
+        document.getElementById('createLabel').style.display="inline"
+        document.getElementById('updateLabel').style.display="none"
+
+        document.getElementById('doCreateButton').style.display="block"
+        document.getElementById('doUpdateButton').style.display="none"
+
+    }
+    function showViewAll(){
+        document.getElementById('showCreateButton').style.display="block"
+        document.getElementById('bookTable').style.display="block"
+        document.getElementById('createUpdateForm').style.display="none"
+    }
+    function showUpdate(buttonElement){
+        document.getElementById('showCreateButton').style.display="none"
+        document.getElementById('bookTable').style.display="none"
+        document.getElementById('createUpdateForm').style.display="block"
+
+        document.getElementById('createLabel').style.display="none"
+        document.getElementById('updateLabel').style.display="inline"
+
+        document.getElementById('doCreateButton').style.display="none"
+        document.getElementById('doUpdateButton').style.display="block"
+
+
+        var rowElement = buttonElement.parentNode.parentNode
+        // these is a way of finding the closest <tr> which would safer, closest()
+        
+        var book = getTaskFromRow(rowElement)
+        populateFormWithTask(task)
+    }
+    function doCreate(){
+        var form = document.getElementById('createUpdateForm')
+
+        var book = {}
+       
+        task.name = form.querySelector('input[name="Task Name"]').value
+        task.author = form.querySelector('input[name="Description"]').value
+        task.due_date = form.querySelector('input[name="Due Date"]').value
+        console.log(JSON.stringify(task))
+        createTaskAjax(task)
+        
+        
+    }
+    function doUpdate(){
+        var task = getTaskFromForm();
+        var rowElement = document.getElementById(task.id);
+        updateTaskAjax(task);
+        setTaskInRow(rowElement,task);
+       
+        clearForm();
+        showViewAll();
+    }
+    function doDelete(r){
+        var tableElement = document.getElementById('taskTable');
+        var rowElement = r.parentNode.parentNode;
+        var index = rowElement.rowIndex;
+        deleteTaskAjax(rowElement.getAttribute("id"));
+        tableElement.deleteRow(index);
+    }
+    function addTaskToTable(task){
+        var tableElement = document.getElementById('taskTable')
+        var rowElement = tableElement.insertRow(-1)
+        rowElement.setAttribute('id',task.id)
+        var cell1 = rowElement.insertCell(0);
+        cell1.innerHTML = task.id
+        var cell2 = rowElement.insertCell(1);
+        cell2.innerHTML = task.name
+        var cell3 = rowElement.insertCell(2);
+        cell3.innerHTML = task.description
+        var cell4 = rowElement.insertCell(3);
+        cell4.innerHTML = task.due_date
+        var cell5 = rowElement.insertCell(4);
+        cell5.innerHTML = '<button onclick="showUpdate(this)">Update</button>'
+        var cell6 = rowElement.insertCell(5);
+        cell6.innerHTML = '<button onclick=doDelete(this)>delete</button>'
+
+    }
+
+    function clearForm(){
+        var form = document.getElementById('createUpdateForm')
+
+        form.querySelector('input[name="Task Name"]').value=''
+        form.querySelector('input[name="Description"]').value=''
+        form.querySelector('input[name="Due Date"]').value=''
+    }
+    function getTaskFromRow(rowElement){
+        var task ={}
+        task.id  = rowElement.getAttribute('id')
+        task.name = rowElement.cells[1].firstChild.textContent
+        task.description = rowElement.cells[2].firstChild.textContent
+        task.due_date = parseInt(rowElement.cells[3].firstChild.textContent,10)
+        return task
+    }
+    function setBookInRow(rowElement, task){
+        rowElement.cells[0].firstChild.textContent= task.id  
+        rowElement.cells[1].firstChild.textContent= task.name 
+        rowElement.cells[2].firstChild.textContent= task.description
+        rowElement.cells[3].firstChild.textContent= task.due_date
+    }
+    function populateFormWithTask(task){
+        var form = document.getElementById('createUpdateForm')
+        form.querySelector('input[name="id"]').disabled = true
+
+        form.querySelector('input[name="id"]').value  = task.id
+        form.querySelector('input[name="Task Name"]').value= task.name
+        form.querySelector('input[name="Description"]').value= task.description
+        form.querySelector('input[name="Due Date"]').value= task.due_date
+        return task
+    }
+    function getTaskFromForm(){
+        var form = document.getElementById('createUpdateForm')
+        var task = {}
+        task.id = form.querySelector('input[name="id"]').value
+        task.name = form.querySelector('input[name="Task Name"]').value
+        task.description = form.querySelector('input[name="Description"]').value
+        task.due_date = parseInt(form.querySelector('input[name="Due Date"]').value,10)
+        console.log(JSON.stringify(task))
+        return task
+    }
+    function getAllAjax(){
+        $.ajax({
+            "url": "/tasks",
+            "method":"GET",
+            "data":"",
+            "dataType": "JSON",
+            "success":function(result){
+                //console.log(result);
+                for (task of result){
+                    addTaskToTable(task);
+                }
+                
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+
+    }
+    function createTaskAjax(task){
+        //var task = {"name":"yoto", "description":"momo","due_date":22/06/2026}
+        console.log(JSON.stringify(task));
+        $.ajax({
+            "url": "/tasks",
+            "method":"POST",
+            "data":JSON.stringify(task),
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+                //console.log(result);
+                task.id = result.id
+                addTaskToTable(task)
+                clearForm()
+                showViewAll()
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    function updateTaskAjax(task){
+        //var task = {"name":"yoto", "description":"momo","due_date":22/06/2026}
+        console.log(JSON.stringify(task));
+        $.ajax({
+            "url": "/tasks/"+encodeURI(task.id),
+            "method":"PUT",
+            "data":JSON.stringify(task),
+            "dataType": "JSON",
+            contentType: "application/json ; charset=utf-8",
+            "success":function(result){
+                console.log(result);
+                  
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    function deleteTaskAjax(id){
+        
+        //console.log(JSON.stringify('deleting '+id));
+        $.ajax({
+            "url": "/tasks/"+encodeURI(id),
+            "method":"DELETE",
+            "data":"",
+            "dataType": "JSON",
+            contentType: "application/json; charset=utf-8",
+            "success":function(result){
+                //console.log(result);
+                  
+            },
+            "error":function(xhr,status,error){
+                console.log("error: "+status+" msg:"+error);
+            }
+        });
+    }
+    getAllAjax();
+  
+
+    
+    </script>
+</html>

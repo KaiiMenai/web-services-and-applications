@@ -40,9 +40,9 @@ def create():
         abort(400)
     # other checking 
     task = {
-        "Task Name": request.json['Task Name'],
-        "Description": request.json['Description'],
-        "Due Date": request.json['Due Date'],
+        "Task Name": request.json['task_name'],
+        "Description": request.json['description'],
+        "Due Date": request.json['due_date'],
     }
     addedtask = taskDAO.create(task)
     
@@ -59,15 +59,15 @@ def update(id):
     if not request.json:
         abort(400)
     reqJson = request.json
-    if 'Due Date' in reqJson and type(reqJson['Due Date']) is not int:
+    if 'due_date' in reqJson and type(reqJson['due_date']) is not int:
         abort(400)
 
-    if 'Task Name' in reqJson:
-        foundTask['Task Name'] = reqJson['Task Name']
-    if 'Description' in reqJson:
-        foundTask['Description'] = reqJson['Description']
-    if 'Due Date' in reqJson:
-        foundTask['Due Date'] = reqJson['Due Date']
+    if 'task_name' in reqJson:
+        foundTask['task_name'] = reqJson['task_name']
+    if 'description' in reqJson:
+        foundTask['description'] = reqJson['description']
+    if 'due_date' in reqJson:
+        foundTask['due_date'] = reqJson['due_date']
     taskDAO.update(id,foundTask)
     return jsonify(foundTask)
         

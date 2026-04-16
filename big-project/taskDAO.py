@@ -53,10 +53,10 @@ class TaskDAO:
 
     def create(self, task):
         cursor = self.getcursor()
-        sql=f"insert into task (`Task Name`, Description, `Due Date`) values(\
-            \"{task.get('Task Name')}\",\
-            \"{task.get('Description')}\",\
-            \"{task.get('Due Date')}\")"
+        sql=f"insert into task (task_name, Description, due_date) values(\
+            \"{task.get('task_name')}\",\
+            \"{task.get('description')}\",\
+            \"{task.get('due_date')}\")"
         print(sql)
         cursor.execute(sql)
 
@@ -69,7 +69,7 @@ class TaskDAO:
 
     def update(self, id, task):
         cursor = self.getcursor()
-        sql=f"update task set `Task Name`=\"{task.get('Task Name')}\", Description=\"{task.get('Description')}\", `Due Date`=\"{task.get('Due Date')}\" where id = {id}"
+        sql=f"update task set task_name=\"{task.get('task_name')}\", Description=\"{task.get('description')}\", due_date=\"{task.get('due_date')}\" where id = {id}"
         print(sql)
         cursor.execute(sql)
         self.connection.commit()
@@ -87,7 +87,7 @@ class TaskDAO:
         #print("delete done")
 
     def convertToDictionary(self, resultLine):
-        attkeys=['id', 'Task Name', 'Description', 'Due Date']
+        attkeys=['id', 'task_name', 'description', 'due_date']
         task = {}
         currentkey = 0
         for attrib in resultLine:

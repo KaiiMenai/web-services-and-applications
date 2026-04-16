@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS task;
-create table task (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    "Task Name" VARCHAR(50) NOT NULL,
-    "Description" VARCHAR(250),
-    "Due Date" DATE
+CREATE TABLE task (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    task_name   VARCHAR(50) NOT NULL,
+    description VARCHAR(250),
+    due_date    DATE
 );

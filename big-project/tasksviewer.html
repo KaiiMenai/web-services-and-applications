@@ -1,12 +1,12 @@
 <html>
     <head>
-        <title> view Books</title>
+        <title> view Tasks</title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
        
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     </head>
     <body>
-        <h1>Books</h1>
+        <h1>Tasks</h1>
         <div> <button id="showCreateButton" onclick="showCreate()">Create</button></div>
         <div>
             <table class="table" id="taskTable">
@@ -16,7 +16,7 @@
                         <th>
                             Description
                         </th>
-                        <th>Price</th>
+                        <th>Due Date</th>
                         <th>Update</th>
                         <th>Delete</th>
                 </tr>
@@ -36,7 +36,7 @@
     <script>
     function showCreate(){
         document.getElementById('showCreateButton').style.display="none"
-        document.getElementById('bookTable').style.display="none"
+        document.getElementById('taskTable').style.display="none"
         document.getElementById('createUpdateForm').style.display="block"
 
         document.getElementById('createLabel').style.display="inline"
@@ -48,12 +48,12 @@
     }
     function showViewAll(){
         document.getElementById('showCreateButton').style.display="block"
-        document.getElementById('bookTable').style.display="block"
+        document.getElementById('taskTable').style.display="block"
         document.getElementById('createUpdateForm').style.display="none"
     }
     function showUpdate(buttonElement){
         document.getElementById('showCreateButton').style.display="none"
-        document.getElementById('bookTable').style.display="none"
+        document.getElementById('taskTable').style.display="none"
         document.getElementById('createUpdateForm').style.display="block"
 
         document.getElementById('createLabel').style.display="none"
@@ -66,16 +66,16 @@
         var rowElement = buttonElement.parentNode.parentNode
         // these is a way of finding the closest <tr> which would safer, closest()
         
-        var book = getTaskFromRow(rowElement)
+        var task = getTaskFromRow(rowElement)
         populateFormWithTask(task)
     }
     function doCreate(){
         var form = document.getElementById('createUpdateForm')
 
-        var book = {}
+        var task = {}
        
         task.name = form.querySelector('input[name="Task Name"]').value
-        task.author = form.querySelector('input[name="Description"]').value
+        task.description = form.querySelector('input[name="Description"]').value
         task.due_date = form.querySelector('input[name="Due Date"]').value
         console.log(JSON.stringify(task))
         createTaskAjax(task)
@@ -132,7 +132,7 @@
         task.due_date = parseInt(rowElement.cells[3].firstChild.textContent,10)
         return task
     }
-    function setBookInRow(rowElement, task){
+    function setTaskInRow(rowElement, task){
         rowElement.cells[0].firstChild.textContent= task.id  
         rowElement.cells[1].firstChild.textContent= task.name 
         rowElement.cells[2].firstChild.textContent= task.description

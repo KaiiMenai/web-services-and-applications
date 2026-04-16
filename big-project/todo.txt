@@ -1,0 +1,4 @@
+- fix the due date on web - have a drop down or select from calendar option
+- make colours of task vs description different
+- make box sizes different for name vs description etc
+- maybe choose something more suitable for a db - could modify to be somewhere to deposit data - have it under a collection, brief description, keywords for area of interest, any CC etc.

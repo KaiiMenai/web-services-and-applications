@@ -63,9 +63,9 @@ def update(id):
         abort(400)
 
     if 'Task Name' in reqJson:
-        foundBook['Task Name'] = reqJson['Task Name']
+        foundTask['Task Name'] = reqJson['Task Name']
     if 'Description' in reqJson:
-        foundBook['Description'] = reqJson['Description']
+        foundTask['Description'] = reqJson['Description']
     if 'Due Date' in reqJson:
         foundTask['Due Date'] = reqJson['Due Date']
     taskDAO.update(id,foundTask)

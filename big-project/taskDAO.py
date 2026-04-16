@@ -53,7 +53,10 @@ class TaskDAO:
 
     def create(self, task):
         cursor = self.getcursor()
-        sql=f"insert into task (Task Name, Description, Due Date) values(\"{task.get('Task Name')}\",\"{task.get('Description')}\",{task.get('Due Date')})"
+        sql=f"insert into task (`Task Name`, Description, `Due Date`) values(\
+            \"{task.get('Task Name')}\",\
+            \"{task.get('Description')}\",\
+            \"{task.get('Due Date')}\")"
         print(sql)
         cursor.execute(sql)
 
@@ -66,7 +69,7 @@ class TaskDAO:
 
     def update(self, id, task):
         cursor = self.getcursor()
-        sql=f"update task set title= \"{task.get('Task Name')}\", description=\"{task.get('Description')}\", due_date={task.get('Due Date')} where id = {id}"
+        sql=f"update task set `Task Name`=\"{task.get('Task Name')}\", Description=\"{task.get('Description')}\", `Due Date`=\"{task.get('Due Date')}\" where id = {id}"
         print(sql)
         cursor.execute(sql)
         self.connection.commit()
@@ -84,7 +87,7 @@ class TaskDAO:
         #print("delete done")
 
     def convertToDictionary(self, resultLine):
-        attkeys=['id','title','description', "due_date"]
+        attkeys=['id', 'Task Name', 'Description', 'Due Date']
         task = {}
         currentkey = 0
         for attrib in resultLine:

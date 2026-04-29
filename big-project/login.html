@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — TaskFlow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg:       #f5f2eb;
+            --surface:  #ffffff;
+            --ink:      #1a1a18;
+            --muted:    #7a7a72;
+            --accent:   #2d6a4f;
+            --accent-h: #1b4332;
+            --err:      #c0392b;
+            --border:   #ddd9d0;
+            --radius:   10px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        /* Subtle grid texture */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2.5rem 2.75rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 2px 24px rgba(0,0,0,0.07);
+            animation: rise 0.4s ease;
+        }
+
+        @keyframes rise {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.9rem;
+            color: var(--ink);
+            letter-spacing: -0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .logo span { color: var(--accent); }
+
+        .subtitle {
+            font-size: 0.875rem;
+            color: var(--muted);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--ink);
+            margin-bottom: 0.4rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            color: var(--ink);
+            background: #fafaf8;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            margin-bottom: 1.2rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(45,106,79,0.12);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 0.25rem;
+        }
+
+        .btn:hover  { background: var(--accent-h); }
+        .btn:active { transform: scale(0.98); }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .error-msg {
+            background: #fdf0ee;
+            border: 1px solid #f1c0bb;
+            color: var(--err);
+            border-radius: 6px;
+            padding: 0.65rem 0.9rem;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .footer-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        .footer-link a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .footer-link a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="logo">Task<span>Flow</span></div>
+        <p class="subtitle">Sign in to your workspace</p>
+
+        <div class="error-msg" id="errorMsg"></div>
+
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="your username" autocomplete="username" />
+
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" />
+
+        <button class="btn" id="loginBtn" onclick="doLogin()">Sign in</button>
+
+        <p class="footer-link">
+            No account? <a href="/register">Create one</a>
+        </p>
+    </div>
+
+    <script>
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const errorMsg      = document.getElementById('errorMsg');
+        const loginBtn      = document.getElementById('loginBtn');
+
+        // Allow Enter key to submit
+        [usernameInput, passwordInput].forEach(el => {
+            el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+        });
+
+        function showError(msg) {
+            errorMsg.textContent = msg;
+            errorMsg.style.display = 'block';
+        }
+
+        async function doLogin() {
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            errorMsg.style.display = 'none';
+
+            if (!username || !password) {
+                showError('Please fill in all fields.');
+                return;
+            }
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing in…';
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    window.location.href = '/';
+                } else {
+                    showError(data.error || 'Login failed.');
+                }
+            } catch (err) {
+                showError('Network error. Please try again.');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign in';
+            }
+        }
+    </script>
+</body>
+</html>

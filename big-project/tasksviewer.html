@@ -7,6 +7,10 @@
     </head>
     <body>
         <h1>Tasks</h1>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+    <h1>Tasks</h1>
+    <button id="logoutBtn" class="btn btn-sm" style="background: #c0392b;">Logout</button>
+        </div>
         <div> <button id="showCreateButton" onclick="showCreate()">Create</button></div>
         <div>
             <table class="table" id="taskTable">
@@ -239,7 +243,24 @@
         });
     }
     getAllAjax();
-
+    
+    // --- Logout button ---
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+    try {
+        const res = await fetch('/api/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        if (res.ok) {
+            window.location.href = '/login';  // or redirect to login
+        } else {
+            console.log('logout failed:', data.message);
+        }
+    } catch (err) {
+        console.log('network error on logout:', err);
+    }
+});
     
     </script>
 </html>

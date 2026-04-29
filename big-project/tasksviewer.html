@@ -74,9 +74,11 @@
 
         var task = {}
     
-        task.name = form.querySelector('input[name="Task Name"]').value
-        task.description = form.querySelector('input[name="Description"]').value
-        task.due_date = form.querySelector('input[name="Due Date"]').value
+        task.task_name = form.querySelector('input[name="Task Name"]').value;
+        task.description = form.querySelector('input[name="Description"]').value;
+        task.due_date = parseInt(form.querySelector('input[name="Due Date"]').value, 10);
+        task.status = form.querySelector('input[name="Status"]').value;
+        task.category_id = form.querySelector('input[name="Category"]').value;
         console.log(JSON.stringify(task))
         createTaskAjax(task)
         
@@ -105,7 +107,7 @@
         var cell1 = rowElement.insertCell(0);
         cell1.innerHTML = task.id
         var cell2 = rowElement.insertCell(1);
-        cell2.innerHTML = task.name
+        cell2.innerHTML = task.task_name
         var cell3 = rowElement.insertCell(2);
         cell3.innerHTML = task.description
         var cell4 = rowElement.insertCell(3);
@@ -127,14 +129,16 @@
     function getTaskFromRow(rowElement){
         var task ={}
         task.id  = rowElement.getAttribute('id')
-        task.name = rowElement.cells[1].firstChild.textContent
+        task.task_name = rowElement.cells[1].firstChild.textContent
         task.description = rowElement.cells[2].firstChild.textContent
         task.due_date = parseInt(rowElement.cells[3].firstChild.textContent,10)
+        task.status = rowElement.cells[4].firstChild.textContent
+        task.category_id = rowElement.cells[5].firstChild.textContent
         return task
     }
     function setTaskInRow(rowElement, task){
         rowElement.cells[0].firstChild.textContent= task.id  
-        rowElement.cells[1].firstChild.textContent= task.name 
+        rowElement.cells[1].firstChild.textContent= task.task_name 
         rowElement.cells[2].firstChild.textContent= task.description
         rowElement.cells[3].firstChild.textContent= task.due_date
     }
@@ -143,7 +147,7 @@
         form.querySelector('input[name="id"]').disabled = true
 
         form.querySelector('input[name="id"]').value  = task.id
-        form.querySelector('input[name="Task Name"]').value= task.name
+        form.querySelector('input[name="Task Name"]').value= task.task_name
         form.querySelector('input[name="Description"]').value= task.description
         form.querySelector('input[name="Due Date"]').value= task.due_date
         return task
@@ -152,7 +156,7 @@
         var form = document.getElementById('createUpdateForm')
         var task = {}
         task.id = form.querySelector('input[name="id"]').value
-        task.name = form.querySelector('input[name="Task Name"]').value
+        task.task_name = form.querySelector('input[name="Task Name"]').value
         task.description = form.querySelector('input[name="Description"]').value
         task.due_date = parseInt(form.querySelector('input[name="Due Date"]').value,10)
         console.log(JSON.stringify(task))

@@ -10,6 +10,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 import logging
 from logging.handlers import RotatingFileHandler
 import os
+from categoryDAO import categoryDAO
 #from flask_cors import CORS, cross_origin
 # app = Flask(__name__)
 #cors = CORS(app) # allow CORS for all domains on all routes.
@@ -197,14 +198,12 @@ def delete(id):
 @app.route('/categories', methods=['GET'])
 @login_required
 def getCategories():
-    from categoryDAO import categoryDAO
     return jsonify(categoryDAO.getAll(current_user.id))
 
 
 @app.route('/categories', methods=['POST'])
 @login_required
 def createCategory():
-    from categoryDAO import categoryDAO
     if not request.json or not request.json.get('name'):
         abort(400)
     name = request.json['name'].strip()
@@ -216,7 +215,6 @@ def createCategory():
 @app.route('/categories/<int:id>', methods=['DELETE'])
 @login_required
 def deleteCategory(id):
-    from categoryDAO import categoryDAO
     categoryDAO.delete(id, current_user.id)
     audit_log.info(f"DELETE_CATEGORY | user_id={current_user.id} | category_id={id}")
     return jsonify({'done': True})

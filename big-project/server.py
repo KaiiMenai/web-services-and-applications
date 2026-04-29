@@ -70,18 +70,12 @@ def update(id):
         foundTask['due_date'] = reqJson['due_date']
     taskDAO.update(id,foundTask)
     return jsonify(foundTask)
-        
-
-    
 
 @app.route('/tasks/<int:id>' , methods=['DELETE'])
 #@cross_origin()
 def delete(id):
     taskDAO.delete(id)
     return jsonify({"done":True})
-
-
-
 
 if __name__ == '__main__' :
     app.run(debug= True)

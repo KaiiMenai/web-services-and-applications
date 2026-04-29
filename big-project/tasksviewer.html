@@ -406,7 +406,7 @@
         }
 
         // --- API calls ---
-        function getAllAjax() {
+        function getAllAjax() { <! -- https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch; https://api.jquery.com/jquery.ajax/; https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest -->
             $.ajax({
                 url: "/tasks",
                 method: "GET",
@@ -421,7 +421,7 @@
                 }
             });
         }
-
+        
         function createTaskAjax(task) {
             $.ajax({
                 url: "/tasks",

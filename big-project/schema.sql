@@ -29,3 +29,5 @@ CREATE TABLE task (
     FOREIGN KEY (category_id) REFERENCES category(id),
     FOREIGN KEY (user_id)     REFERENCES user(id)
 );
+
+-- https://www.sqlite.org/foreignkeys.html; https://www.sqlite.org/datatype3.html

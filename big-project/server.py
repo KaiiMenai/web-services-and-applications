@@ -1,12 +1,12 @@
 # server.py
 # This module sets up a Flask web server to handle HTTP requests for managing tasks. 
 # It defines routes for creating, reading, updating, and deleting tasks, and uses the taskDAO and userDAO classes to interact with the database. 
-# The server is designed to be simple and easy to extend with additional functionality as needed.
+# The server is designed to be simple and easy to extend with additional functionality as needed. 
 # author: Kyra Menai Hamilton
 
-from flask import Flask, jsonify, request, abort, redirect, url_for, session
+from flask import Flask, jsonify, request, abort, redirect, url_for, session # https://help.pythonanywhere.com/pages/Flask/; https://stackoverflow.com/questions/56529391/setting-and-retrieving-environmental-variables-in-flask-applications
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user # https://flask.palletsprojects.com/en/stable/quickstart/#http-methods
 import logging
 from logging.handlers import RotatingFileHandler
 import os
@@ -19,15 +19,15 @@ from categoryDAO import categoryDAO
 from taskDAO import taskDAO
 from userDAO import userDAO
 
-app = Flask(__name__, static_url_path='', static_folder='.')
+app = Flask(__name__, static_url_path='', static_folder='.') # https://flask.palletsprojects.com/en/stable/quickstart/; https://flask.palletsprojects.com/en/stable/patterns/packages/
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-change-in-production')
 
-bcrypt = Bcrypt(app)
+bcrypt = Bcrypt(app) # https://flask-bcrypt.readthedocs.io/en/1.0.1/; https://www.freecodecamp.org/news/how-to-setup-user-authentication-in-flask/
 login_manager = LoginManager(app)
 login_manager.login_view = 'serve_login'
 
-# --- Audit logger setup ---
-def setup_audit_logger():
+# --- Audit logger setup --- # https://stackoverflow.com/questions/14037975/how-do-i-write-flasks-excellent-debug-log-message-to-a-file-in-production; https://oneuptime.com/blog/post/2026-02-02-flask-logging/view; 
+def setup_audit_logger():    # https://docs.python.org/3/library/logging.handlers.html#logging.handlers.RotatingFileHandler; https://flask.palletsprojects.com/en/stable/logging/
     logger = logging.getLogger('audit')
     logger.setLevel(logging.INFO)
     handler = RotatingFileHandler('audit.log', maxBytes=1_000_000, backupCount=5)
@@ -37,7 +37,7 @@ def setup_audit_logger():
 
 audit_log = setup_audit_logger()
 
-# --- Flask-Login user class ---
+# --- Flask-Login user class --- # https://flask-login.readthedocs.io/en/latest/; https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login
 class User(UserMixin):
     def __init__(self, user_dict):
         self.id = user_dict['id']
@@ -79,7 +79,7 @@ def register():
     password = request.json.get('password', '')
 
     if not username or not email or not password:
-        return jsonify({'error': 'All fields are required'}), 400
+        return jsonify({'error': 'All fields are required'}), 400 # https://flask.palletsprojects.com/en/stable/api/#flask.json.jsonify
     if len(password) < 6:
         return jsonify({'error': 'Password must be at least 6 characters'}), 400
     if userDAO.findByUsername(username):
@@ -93,7 +93,7 @@ def register():
     return jsonify({'message': 'Account created', 'id': new_id}), 201
 
 
-@app.route('/api/login', methods=['POST'])
+@app.route('/api/login', methods=['POST']) # https://developer.mozilla.org/en-US/docs/Glossary/REST; https://flask.palletsprojects.com/en/stable/api/#flask.request
 def login():
     if not request.json:
         abort(400)

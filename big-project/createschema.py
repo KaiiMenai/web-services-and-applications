@@ -1,6 +1,6 @@
-import sqlite3
+import sqlite3 # https://docs.python.org/3/library/sqlite3.html; https://docs.python.org/3/library/sqlite3.html#sqlite3-placeholders
 import dbconfig as cfg
-database = cfg.mysql["database"]
+database = cfg.mysql["database"] # https://www.sqlitetutorial.net/sqlite-python/; https://www.sqlitetutorial.net/sqlite-python/insert/
 
 con = sqlite3.connect(database)
 cur = con.cursor()

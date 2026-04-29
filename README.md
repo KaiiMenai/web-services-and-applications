@@ -2,8 +2,17 @@
 
 author: Kyra Menai Hamilton
 
-Work herein is from the WS&A module.
+Work herein is from the Web Services and Applications module.
 
-Work was completed in VSCode using modules:
+- Assignments - contains weekly tasks and small projects.
+- Big Project - contains the big project for the module for assessment.
 
-[List of modules used in VSCode]
+In summary the module contents cover:
+- sql use
+- venv
+- flask / FlaskAPI
+- API
+- CRUD functions
+- JSON
+- RESTful API
+- AJAX

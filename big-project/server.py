@@ -69,7 +69,7 @@ def serve_register():
         return redirect(url_for('index'))
     return app.send_static_file('register.html')
 
-# --- Auth API routes ---
+# --- Auth API routes --- # https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
 @app.route('/api/register', methods=['POST'])
 def register():
     if not request.json:
@@ -182,8 +182,7 @@ def update(id):
     audit_log.info(f"UPDATE_TASK | user_id={current_user.id} | task_id={id} | name={existing['task_name']}")
     return jsonify(existing)
 
-
-@app.route('/tasks/<int:id>', methods=['DELETE'])
+@app.route('/tasks/<int:id>', methods=['DELETE']) # In theory, this should mean that other users can't delete what they don't have access to, but on previous testing I was able to delete Admin1's task whilst logged in as Admin2. - possible issue somewhere else. 
 @login_required
 def delete(id):
     existing = taskDAO.findByID(id, current_user.id)

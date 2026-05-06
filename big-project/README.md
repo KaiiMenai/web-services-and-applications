@@ -25,6 +25,4 @@ This folder will contain work for the Web Services and Applications module proje
 
 FIXES NEEDED
 
-- Ensure not all users can delete others tasks
-- add in categories in createschema.py then load categories into frontend
 - make it look pretty as it looks a little basic at the moment

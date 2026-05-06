@@ -66,6 +66,7 @@ python createschema.py
 ## Logging
 
 The application writes an audit trail to `audit.log`. This records:
+
 - registration,
 - login attempts,
 - logout,

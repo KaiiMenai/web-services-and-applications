@@ -21,7 +21,7 @@ class UserDAO:
         self.connection.close()
         
     def create(self, username, email, password_hash):
-        cursor = self.getcursor()
+        cursor = self.getcursor() # https://www.sqlitetutorial.net/sqlite-python/sqlite-python-select/
         sql = "INSERT INTO user (username, email, password_hash) VALUES (?, ?, ?)"
         cursor.execute(sql, (username, email, password_hash))
         self.connection.commit()
@@ -62,3 +62,5 @@ class UserDAO:
 
 
 userDAO = UserDAO()
+
+# END

@@ -222,6 +222,8 @@ def deleteCategory(id):
 if __name__ == '__main__':
     app.run(debug=True)
 
+# END
+
 # OLD CODE BELOW - KEEP FOR REFERENCE
 #app = Flask(__name__)
 

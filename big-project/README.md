@@ -4,12 +4,6 @@ author: Kyra Menai Hamilton
 
 This folder will contain work for the Web Services and Applications module project.
 
-## The App
-
-## Features
-
-## Technology
-
 ## Project idea
 
 - Task Tracker
@@ -22,7 +16,49 @@ This folder will contain work for the Web Services and Applications module proje
 - AJAX/fetch  use for API
 - Add in a file that automatically saves and catalogues login, create, edit, and delete action in a separate file. This will be an example of an audit file showing editing and modification. [1](https://oneuptime.com/blog/post/2026-02-02-flask-logging/view) [2](https://flask.palletsprojects.com/en/stable/logging/) [3](https://stackoverflow.com/questions/14037975/how-do-i-write-flasks-excellent-debug-log-message-to-a-file-in-production)
 
+## The App
+
+### TaskFlow - Fast Task Tracker
+
+TaskFlow is a Flask and SQLite web application for managing personal tasks with user authentication, task categorisation, and audit logging. Users can register, log in, log out, create, read, update/edit, delete tasks, and organise tasks by category through a clean web interface.
+
+## Features
+
+- User registration and login with password hashing.
+- User-specific task management.
+- CRUD tasks - Create, Read, Update/Edit, and Delete tasks.
+- Task categorisation using a separate category table.
+- REST-style JSON endpoints.
+- AJAX-based frontend interactions.
+- Audit logging for key actions such as a register, login, logout, create, read, update/edit, and delete.
+- Clean, responsive interface (hopefully) with a custom HTML and CSS.
+
+## Technology
+
+- Python
+- Flask
+- Flask-Login
+- Flask-Bcrypt
+- SQLite
+- HTML
+- CSS
+- JavaScript
+- jQuery AJAX
+
 ## Project Structure
+
+- `server.py` - Flask app, routes, authentication, and JSON endpoints.
+- `taskDAO.py` - database access for tasks.
+- `userDAO.py` - database access for users.
+- `categoryDAO.py` - database access for categories.
+- `createschema.py` - creates the SQLite database tables.
+- `schema.sql` - SQL schema for the database.
+- `dbconfig.py` - database configuration.
+- `tasksviewer.html` - main task management page.
+- `login.html` - login page.
+- `register.html` - registration page.
+- `requirements.txt` - Python dependencies.
+- `audit.log` - audit trial file created when the app runs.
 
 ## Set Up
 

@@ -1,6 +1,7 @@
-# createschema.py - https://www.sqlitetutorial.net/sqlite-python/creating-database/; https://www.sqlitetutorial.net/sqlite-python/
-# This file initialises the SQLite database from schema.sql for the task management application.
+# createschema.py
 # Run this ONCE before starting the server: python createschema.py
+# Guide: https://www.sqlitetutorial.net/sqlite-python/creating-database/; https://www.sqlitetutorial.net/sqlite-python/
+# This program initialises the SQLite database from schema.sql for the task management application.
 # WARNING: This will DROP and recreate ALL tables, deleting existing data.
 # author: Kyra Menai Hamilton
 

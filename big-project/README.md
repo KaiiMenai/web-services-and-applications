@@ -4,7 +4,7 @@ author: Kyra Menai Hamilton
 
 This folder will contain work for the Web Services and Applications module project.
 
-## Project idea
+### Project idea
 
 - Task Tracker
 - User only access - [flask-bcrypt](https://www.freecodecamp.org/news/how-to-setup-user-authentication-in-flask/) [2](https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login)
@@ -22,7 +22,7 @@ This folder will contain work for the Web Services and Applications module proje
 
 TaskFlow is a Flask and SQLite web application for managing personal tasks with user authentication, task categorisation, and audit logging. Users can register, log in, log out, create, read, update/edit, delete tasks, and organise tasks by category through a clean web interface.
 
-## Features
+### Features
 
 - User registration and login with password hashing.
 - User-specific task management.
@@ -33,7 +33,7 @@ TaskFlow is a Flask and SQLite web application for managing personal tasks with 
 - Audit logging for key actions such as a register, login, logout, create, read, update/edit, and delete.
 - Clean, responsive interface (hopefully) with a custom HTML and CSS.
 
-## Technology
+### Technology
 
 - Python
 - Flask
@@ -45,7 +45,7 @@ TaskFlow is a Flask and SQLite web application for managing personal tasks with 
 - JavaScript
 - jQuery AJAX
 
-## Project Structure
+### Project Structure
 
 - `server.py` - Flask app, routes, authentication, and JSON endpoints.
 - `taskDAO.py` - database access for tasks.
@@ -60,36 +60,92 @@ TaskFlow is a Flask and SQLite web application for managing personal tasks with 
 - `requirements.txt` - Python dependencies.
 - `audit.log` - audit trial file created when the app runs.
 
-## Set Up
+### Set Up
 
-### 1. Repository
+#### 1. Clone the Repository
 
-### 2. Create a venv
+```bash
+git clone <your-repo-link>
+cd <your-repo-folder>
+```
 
-### 3. Install dependencies
+#### 2. Create a virtual environment
 
-### 4. Daytabase
+On Windows:
 
-### 5. Run the app
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
 
-## How to use it
+On macOS/Linux:
 
-1. Register
-2. Log in
-3. Create categories
-4. Add tasks and assign to a category
-5. Edit/Delete tasks as required
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+#### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+#### 4. Create the Database
+
+Run the schema setup script once:
+
+```bash
+python createschema.py
+```
+
+This will create the SQLite database file and the required tables for users, categories, and tasks.
+
+#### 5. Run the application
+
+```bash
+python server.py
+```
+
+Open the app in a browser:
+
+- `http://127.0.0.1:5000/register` — create an account.
+- `http://127.0.0.1:5000/login` — sign in.
+- `http://127.0.0.1:5000/` — use the task tracker after logging in.
+
+### How to use it
+
+1. Register for a new account.
+2. Log in with the account username and password.
+3. Create categories if needed for task categorisation.
+4. Add tasks and assign them to a category.
+5. Update/Edit or Delete tasks as required.
 6. Log out when done.
 
-## API Endpoints
+### API Endpoints
 
-### Authentication
+#### Authentication
 
-### Tasks
+- `POST /api/register`
+- `POST /api/login`
+- `POST /api/logout`
+- `GET /api/me`
 
-### Categories
+#### Tasks
 
-## Database Notes
+- `GET /tasks`
+- `GET /tasks/<id>`
+- `POST /tasks`
+- `PUT /tasks/<id>`
+- `DELETE /tasks/<id>`
+
+#### Categories
+
+- `GET /categories`
+- `POST /categories`
+- `DELETE /categories/<id>`
+
+### Database Notes
 
 The app uses SQLite and stores the data in the database file defined in `dbconfig.py`.
 
@@ -99,7 +155,7 @@ If you need to reset the database, delete the database file and run:
 python createschema.py
 ```
 
-## Logging
+### Logging
 
 The application writes an audit trail to `audit.log`. This records:
 
@@ -111,9 +167,9 @@ The application writes an audit trail to `audit.log`. This records:
 - task deletion,
 - category actions.
 
-## Troubleshooting
+### Troubleshooting
 
-### `no such table: user`
+#### `no such table: user`
 
 This usually means the database wasn't yet created. Run:
 
@@ -123,7 +179,7 @@ python createschema.py
 
 before starting the server.
 
-### Virtual environment activation on Windows
+#### Virtual environment activation on Windows
 
 If PowerShell blocks activation scripts, run PowerShell as admin and allow scripts for your user:
 
@@ -131,7 +187,7 @@ If PowerShell blocks activation scripts, run PowerShell as admin and allow scrip
 Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 ```
 
-### Date input problems
+#### Date input problems
 
 If due dates don't work correctly, make sure the task form uses:
 
@@ -141,13 +197,15 @@ If due dates don't work correctly, make sure the task form uses:
 
 and that the frontend sends the date as a string in `YYYY-MM-DD` format.
 
-## Deployment
+### Deployment
 
 This project is currently designed to run locally.
 
 If you deploy it later, add the hosted link here:
 
 `<deployment link here>`
+
+### Notes
 
 - Ensure `SECRET_KEY` is set correctly for secure sessions.
 - Make sure `createschema.py` is run before first use.

@@ -149,6 +149,7 @@ Open the app in a browser:
 - `POST /tasks`
 - `PUT /tasks/<id>`
 - `DELETE /tasks/<id>`
+- `PATCH /tasks/<id>`
 
 #### Categories
 
@@ -228,7 +229,5 @@ Tool: Claude (claude.ai)
 
 - Explain how I can make a clean user authenticated version with the flask-login and bcrypt.
 - I would  like to add the option to have tabs on the left of the main page to choose what to view; tasks by person, task categories, tasks completed. I also want to add that if a task is deleted there needs to be a prompt asking the user to input why. I also want user to have the ability to have a check box that marks tasks as complete. If tasks need to be reopened, then a new task is created linking to the old one
-
-## Known Issues
 
 # END

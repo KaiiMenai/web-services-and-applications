@@ -59,6 +59,7 @@ TaskFlow is a Flask and SQLite web application for managing personal tasks with 
 - `register.html` - registration page.
 - `requirements.txt` - Python dependencies.
 - `audit.log` - audit trial file created when the app runs.
+- `seeddata.py` - example database containing a mix of 14 tasks, in 3 categories at various stages for 2 users.
 
 ### Set Up
 
@@ -101,7 +102,17 @@ python createschema.py
 
 This will create the SQLite database file and the required tables for users, categories, and tasks.
 
-#### 5. Run the application
+#### 5. (Optional) load the demo data
+
+This will populate the app with example users. categories, and tasks for demonstration.
+
+```bash
+python seeddata.py
+```
+
+Skip this step to start with an empty database and register an account.
+
+#### 6. Run the application
 
 ```bash
 python server.py

@@ -231,6 +231,4 @@ Tool: Claude (claude.ai)
 
 ## Known Issues
 
-
-
 # END

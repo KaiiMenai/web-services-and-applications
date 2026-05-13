@@ -3,39 +3,513 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tasks — TaskFlow</title>
+    <title>TaskFlow — My Tasks</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --bg:       #f5f2eb;
-            --surface:  #ffffff;
-            --ink:      #1a1a18;
-            --muted:    #7a7a72;
-            --accent:   #2d6a4f;
-            --accent-h: #1b4332;
-            --err:      #c0392b;
-            --border:   #ddd9d0;
-            --radius:   10px;
+            --bg:         #f5f2eb;
+            --surface:    #ffffff;
+            --sidebar-bg: #1a1a18;
+            --ink:        #1a1a18;
+            --ink-light:  #3d3d39;
+            --muted:      #7a7a72;
+            --accent:     #2d6a4f;
+            --accent-h:   #1b4332;
+            --accent-dim: rgba(45,106,79,0.12);
+            --danger:     #c0392b;
+            --danger-dim: rgba(192,57,43,0.1);
+            --warn:       #b07d2b;
+            --border:     #ddd9d0;
+            --radius:     8px;
+
+            --status-pending:  #b07d2b;
+            --status-progress: #2471a3;
+            --status-done:     #2d6a4f;
         }
 
         body {
             font-family: 'DM Sans', sans-serif;
             background: var(--bg);
+            color: var(--ink);
             min-height: 100vh;
+            display: flex;
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 240px;
+            min-height: 100vh;
+            background: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            padding: 1.75rem 1.25rem;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            z-index: 10;
+        }
+
+        .logo {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.6rem;
+            color: #fff;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.2rem;
+        }
+
+        .logo span { color: #74c69d; }
+
+        .logo-sub {
+            font-size: 0.73rem;
+            color: #6b6b62;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-section {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #4a4a42;
+            margin-bottom: 0.6rem;
+            padding-left: 0.5rem;
+        }
+
+        .cat-list { list-style: none; margin-bottom: 1.5rem; }
+
+        .cat-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.45rem 0.6rem;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #b0b09a;
+            font-size: 0.875rem;
+            transition: background 0.15s, color 0.15s;
+            gap: 0.4rem;
+        }
+
+        .cat-list li:hover,
+        .cat-list li.active {
+            background: rgba(255,255,255,0.07);
+            color: #fff;
+        }
+
+        .cat-list li.active { font-weight: 500; }
+
+        .cat-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .cat-del {
+            background: none;
+            border: none;
+            color: #4a4a42;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+            padding: 0 2px;
+            transition: color 0.15s;
+        }
+
+        .cat-del:hover { color: #e74c3c; }
+
+        .add-cat-row {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 2rem;
+        }
+
+        .add-cat-input {
+            flex: 1;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.825rem;
+            padding: 0.45rem 0.6rem;
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .add-cat-input::placeholder { color: #4a4a42; }
+        .add-cat-input:focus { border-color: #74c69d; }
+
+        .add-cat-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0 0.6rem;
+            transition: background 0.15s;
+        }
+
+        .add-cat-btn:hover { background: var(--accent-h); }
+
+        .sidebar-spacer { flex: 1; }
+
+        .user-block {
+            border-top: 1px solid rgba(255,255,255,0.07);
+            padding-top: 1rem;
+        }
+
+        .user-name {
+            font-size: 0.875rem;
+            color: #b0b09a;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-name strong { color: #fff; }
+
+        .logout-btn {
+            width: 100%;
+            background: rgba(192,57,43,0.15);
+            border: 1px solid rgba(192,57,43,0.25);
+            border-radius: 6px;
+            color: #e88b82;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.825rem;
+            padding: 0.5rem;
+            text-align: center;
+            transition: background 0.15s;
+        }
+
+        .logout-btn:hover { background: rgba(192,57,43,0.25); }
+
+        /* ── Main ── */
+        .main {
+            margin-left: 240px;
+            flex: 1;
+            padding: 2.5rem 2.75rem;
+            max-width: 900px;
+        }
+
+        .main-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .page-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 2rem;
+            color: var(--ink);
+            letter-spacing: -0.5px;
+        }
+
+        .page-sub {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 0.2rem;
+            font-weight: 300;
+        }
+
+        .new-task-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: var(--radius);
+            color: #fff;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.65rem 1.25rem;
+            white-space: nowrap;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .new-task-btn:hover  { background: var(--accent-h); }
+        .new-task-btn:active { transform: scale(0.97); }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            background: var(--ink);
+            color: #fff;
+            border-radius: var(--radius);
+            padding: 0.75rem 1.25rem;
+            font-size: 0.875rem;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: opacity 0.25s, transform 0.25s;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        .toast.show { opacity: 1; transform: translateY(0); }
+        .toast.error { background: var(--danger); }
+
+        /* ── Task cards ── */
+        .tasks-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .task-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.1rem 1.3rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            transition: box-shadow 0.2s, transform 0.15s;
+            animation: slideIn 0.25s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .task-card:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+            transform: translateY(-1px);
+        }
+
+        .task-card.done { opacity: 0.6; }
+        .task-card.done .task-name { text-decoration: line-through; }
+
+        .task-check {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border);
+            border-radius: 50%;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: border-color 0.2s, background 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
         }
 
+        .task-check:hover { border-color: var(--accent); }
+        .task-check.checked {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .task-check.checked::after {
+            content: '✓';
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 700;
+        }
+
+        .task-body { flex: 1; min-width: 0; }
+
+        .task-name {
+            font-weight: 500;
+            font-size: 0.975rem;
+            color: var(--ink);
+            margin-bottom: 0.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .task-desc {
+            font-size: 0.825rem;
+            color: var(--muted);
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .badge {
+            font-size: 0.72rem;
+            border-radius: 20px;
+            padding: 0.2rem 0.6rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+
+        .badge-cat {
+            background: #eef2ff;
+            color: #3b47c0;
+        }
+
+        .badge-due {
+            background: #f5f2eb;
+            color: var(--muted);
+        }
+
+        .badge-due.overdue {
+            background: #fdf0ee;
+            color: var(--danger);
+        }
+
+        .badge-status-pending    { background: #fef9ec; color: var(--status-pending); }
+        .badge-status-in-progress { background: #eaf4fb; color: var(--status-progress); }
+        .badge-status-done       { background: #eaf4ef; color: var(--status-done); }
+
+        .task-actions {
+            display: flex;
+            gap: 0.4rem;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 0.35rem 0.6rem;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+
+        .icon-btn:hover { background: var(--border); color: var(--ink); }
+
+        .icon-btn.del:hover {
+            background: var(--danger-dim);
+            border-color: rgba(192,57,43,0.3);
+            color: var(--danger);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--muted);
+        }
+
+        .empty-state .big { font-size: 2.5rem; margin-bottom: 0.75rem; }
+        .empty-state p { font-size: 0.9rem; font-weight: 300; }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(26,26,24,0.55);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            padding: 1.5rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+        .modal {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 2rem 2.25rem;
+            width: 100%;
+            max-width: 460px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+            transform: translateY(12px);
+            transition: transform 0.2s;
+        }
+
+        .modal-overlay.open .modal { transform: translateY(0); }
+
+        .modal-title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            color: var(--ink);
+        }
+
+        .form-row { margin-bottom: 1.1rem; }
+
+        .form-row label {
+            display: block;
+            font-size: 0.78rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--ink-light);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-row input,
+        .form-row textarea,
+        .form-row select {
+            width: 100%;
+            padding: 0.65rem 0.85rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            color: var(--ink);
+            background: #fafaf8;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            resize: vertical;
+        }
+
+        .form-row input:focus,
+        .form-row textarea:focus,
+        .form-row select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-cancel {
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--muted);
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            padding: 0.6rem 1.1rem;
+            transition: background 0.15s;
+        }
+
+        .btn-cancel:hover { background: var(--border); }
+
+        .btn-save {
+            background: var(--accent);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.6rem 1.4rem;
+            transition: background 0.15s;
+        }
+
+        .btn-save:hover { background: var(--accent-h); }
+
+        /* ── Background texture ── */
         body::before {
             content: '';
             position: fixed;
@@ -44,434 +518,430 @@
                 linear-gradient(var(--border) 1px, transparent 1px),
                 linear-gradient(90deg, var(--border) 1px, transparent 1px);
             background-size: 40px 40px;
-            opacity: 0.4;
+            opacity: 0.25;
             pointer-events: none;
+            z-index: 0;
         }
 
-        .card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2rem 2.25rem;
-            width: 100%;
-            max-width: 800px;
-            box-shadow: 0 2px 24px rgba(0,0,0,0.07);
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .logo {
-            font-family: 'DM Serif Display', serif;
-            font-size: 1.8rem;
-            color: var(--ink);
-            letter-spacing: -0.5px;
-        }
-
-        .logo span {
-            color: var(--accent);
-        }
-
-        .btn {
-            padding: 0.7rem 1rem;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        .btn:hover  { background: var(--accent-h); }
-        .btn:active { transform: scale(0.98); }
-
-        .btn-logout {
-            background: var(--err);
-        }
-
-        .btn-logout:hover { background: #a0251e; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
-        }
-
-        thead th {
-            background: #f0f0ef;
-            font-weight: 500;
-            color: var(--ink);
-            padding: 0.6rem 0.8rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        tbody td {
-            padding: 0.6rem 0.8rem;
-            border-bottom: 1px solid #f0f0ef;
-        }
-
-        tbody tr:nth-child(even) {
-            background: #fdfdfd;
-        }
-
-        .btn-table {
-            background: transparent;
-            color: var(--accent);
-            border: 1px solid var(--border);
-            padding: 0.3rem 0.6rem;
-            font-size: 0.8rem;
-        }
-
-        .btn-table:hover {
-            background: #f0f0ef;
-            border-color: var(--accent);
-        }
-
-        .form-group {
-            margin-bottom: 0.9rem;
-        }
-
-        label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 500;
-            color: var(--ink);
-            letter-spacing: 0.03em;
-            text-transform: uppercase;
-            margin-bottom: 0.4rem;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 0.6rem 0.8rem;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-family: 'DM Sans', sans-serif;
-            font-size: 0.95rem;
-            color: var(--ink);
-            background: #fafaf8;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(45,106,79,0.12);
-        }
+        .sidebar, .main { position: relative; z-index: 1; }
     </style>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 <body>
-    <div class="card">
 
-        <div class="header">
-            <div class="logo">Task<span>Flow</span> <span style="font-size: 1rem; font-weight: 400; color: var(--muted);">— Tasks</span></div>
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+    <div class="logo">Task<span>Flow</span></div>
+    <div class="logo-sub">Task Manager</div>
 
-            <button id="logoutBtn" class="btn btn-logout">Logout</button>
-        </div>
+    <div class="sidebar-section">Categories</div>
+    <ul class="cat-list" id="catList">
+        <li class="active" data-id="all" onclick="filterByCategory('all', this)">
+            <span class="cat-name">All tasks</span>
+        </li>
+    </ul>
 
-        <button id="showCreateButton" class="btn" onclick="showCreate()">Create Task</button>
-
-        <table id="taskTable">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Task Name</th>
-                    <th>Description</th>
-                    <th>Due Date</th>
-                    <th>Category</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-
-        <div id="createUpdateForm" style="display: none; margin-top: 1.2rem; padding: 1.2rem; background: #fdfdfd; border-radius: 8px;">
-            <h2>
-                <span id="createLabel">Create a</span>
-                <span id="updateLabel" style="display: none;">Update</span>
-                Task
-            </h2>
-
-            <input type="hidden" name="id" />
-
-            <div class="form-group">
-                <label for="create-name">Task name</label>
-                <input type="text" id="create-name" name="task_name" />
-            </div>
-
-            <div class="form-group">
-                <label for="create-description">Description</label>
-                <input type="text" id="create-description" name="description" />
-            </div>
-
-            <div class="form-group">
-                <label for="create-due-date">Due date</label>
-                <input type="date" id="create-due-date" name="due_date" />
-            </div>
-
-            <div class="form-group">
-                <label for="create-status">Status</label>
-                <select id="create-status" name="status">
-                    <option value="pending">Pending</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="completed">Completed</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="create-category">Category</label>
-                <select id="create-category" name="category_id"></select>
-            </div>
-
-            <div>
-                <button id="doCreateButton" class="btn" onclick="doCreate()">Create</button>
-                <button id="doUpdateButton" class="btn" style="display: none;" onclick="doUpdate()">Update</button>
-            </div>
-        </div>
-
+    <div class="add-cat-row">
+        <input class="add-cat-input" id="newCatInput" placeholder="New category…" maxlength="50"
+               onkeydown="if(event.key==='Enter') addCategory()" />
+        <button class="add-cat-btn" onclick="addCategory()" title="Add category">+</button>
     </div>
 
-    <script>
-        const btn = document.getElementById('logoutBtn');
-        btn.addEventListener('click', async () => {
-            try {
-                const res = await fetch('/api/logout', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const data = await res.json();
-                if (res.ok) {
-                    window.location.href = '/login';
-                } else {
-                    console.log('logout failed:', data.message);
-                }
-            } catch (err) {
-                console.log('network error on logout:', err);
-            }
+    <div class="sidebar-spacer"></div>
+
+    <div class="user-block">
+        <div class="user-name">Signed in as <strong id="usernameDisplay">…</strong></div>
+        <button class="logout-btn" onclick="doLogout()">Sign out</button>
+    </div>
+</aside>
+
+<!-- ── Main content ── -->
+<main class="main">
+    <div class="main-header">
+        <div>
+            <h1 class="page-title" id="pageTitle">All tasks</h1>
+            <p class="page-sub" id="pageSubtitle">Loading…</p>
+        </div>
+        <button class="new-task-btn" onclick="openCreateModal()">+ New task</button>
+    </div>
+
+    <div class="tasks-grid" id="tasksGrid">
+        <!-- tasks injected here -->
+    </div>
+</main>
+
+<!-- ── Task modal ── -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal">
+        <h2 class="modal-title" id="modalTitle">New task</h2>
+        <input type="hidden" id="editId" />
+
+        <div class="form-row">
+            <label for="fTaskName">Task name</label>
+            <input type="text" id="fTaskName" placeholder="What needs doing?" maxlength="50" />
+        </div>
+        <div class="form-row">
+            <label for="fDescription">Description</label>
+            <textarea id="fDescription" rows="3" placeholder="Optional details…" maxlength="250"></textarea>
+        </div>
+        <div class="form-row">
+            <label for="fDueDate">Due date</label>
+            <input type="date" id="fDueDate" />
+        </div>
+        <div class="form-row">
+            <label for="fStatus">Status</label>
+            <select id="fStatus">
+                <option value="pending">Pending</option>
+                <option value="in-progress">In progress</option>
+                <option value="done">Done</option>
+            </select>
+        </div>
+        <div class="form-row">
+            <label for="fCategory">Category</label>
+            <select id="fCategory">
+                <option value="">No category</option>
+            </select>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            <button class="btn-save" id="saveBtn" onclick="saveTask()">Save task</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Toast ── -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──
+let allTasks      = [];
+let allCategories = [];
+let activeCatId   = 'all';
+
+// ── Boot ──
+async function init() {
+    await fetchUser();
+    await Promise.all([fetchCategories(), fetchTasks()]);
+}
+
+async function fetchUser() {
+    try {
+        const res  = await fetch('/api/me');
+        if (!res.ok) { window.location.href = '/login'; return; }
+        const data = await res.json();
+        document.getElementById('usernameDisplay').textContent = data.username;
+    } catch { window.location.href = '/login'; }
+}
+
+// ── Tasks ──
+async function fetchTasks() {
+    try {
+        const res  = await fetch('/tasks');
+        if (!res.ok) throw new Error();
+        allTasks = await res.json();
+        renderTasks();
+    } catch { showToast('Could not load tasks.', true); }
+}
+
+function renderTasks() {
+    const grid = document.getElementById('tasksGrid');
+    const filtered = activeCatId === 'all'
+        ? allTasks
+        : allTasks.filter(t => String(t.category_id) === String(activeCatId));
+
+    const title    = document.getElementById('pageTitle');
+    const subtitle = document.getElementById('pageSubtitle');
+
+    if (activeCatId === 'all') {
+        title.textContent = 'All tasks';
+    } else {
+        const cat = allCategories.find(c => String(c.id) === String(activeCatId));
+        title.textContent = cat ? cat.name : 'Tasks';
+    }
+
+    const done    = filtered.filter(t => t.status === 'done').length;
+    subtitle.textContent = filtered.length === 0
+        ? 'No tasks yet'
+        : `${filtered.length} task${filtered.length !== 1 ? 's' : ''} · ${done} done`;
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state">
+                <div class="big">📋</div>
+                <p>No tasks here yet.<br>Hit <strong>+ New task</strong> to get started.</p>
+            </div>`;
+        return;
+    }
+
+    // Sort: pending/in-progress by due date, done at bottom
+    const sorted = [...filtered].sort((a, b) => {
+        if (a.status === 'done' && b.status !== 'done') return 1;
+        if (b.status === 'done' && a.status !== 'done') return -1;
+        if (!a.due_date) return 1;
+        if (!b.due_date) return -1;
+        return new Date(a.due_date) - new Date(b.due_date);
+    });
+
+    grid.innerHTML = sorted.map(t => taskCardHTML(t)).join('');
+}
+
+function taskCardHTML(t) {
+    const today      = new Date().toISOString().split('T')[0];
+    const overdue    = t.due_date && t.due_date < today && t.status !== 'done';
+    const dueBadge   = t.due_date
+        ? `<span class="badge badge-due ${overdue ? 'overdue' : ''}">
+               ${overdue ? '⚠ ' : ''}${formatDate(t.due_date)}
+           </span>`
+        : '';
+    const catBadge   = t.category_name
+        ? `<span class="badge badge-cat">${escHtml(t.category_name)}</span>`
+        : '';
+    const statusLabel = { pending: 'Pending', 'in-progress': 'In progress', done: 'Done' }[t.status] || t.status;
+    const statusClass = { pending: 'pending', 'in-progress': 'in-progress', done: 'done' }[t.status] || 'pending';
+    const checked     = t.status === 'done' ? 'checked' : '';
+
+    return `
+        <div class="task-card ${t.status === 'done' ? 'done' : ''}" id="card-${t.id}">
+            <div class="task-check ${checked}" onclick="toggleDone(${t.id})" title="Toggle done"></div>
+            <div class="task-body">
+                <div class="task-name">${escHtml(t.task_name)}</div>
+                ${t.description ? `<div class="task-desc">${escHtml(t.description)}</div>` : ''}
+                <div class="task-meta">
+                    <span class="badge badge-status-${statusClass}">${statusLabel}</span>
+                    ${catBadge}
+                    ${dueBadge}
+                </div>
+            </div>
+            <div class="task-actions">
+                <button class="icon-btn" onclick="openEditModal(${t.id})" title="Edit">✏</button>
+                <button class="icon-btn del" onclick="deleteTask(${t.id})" title="Delete">✕</button>
+            </div>
+        </div>`;
+}
+
+async function toggleDone(id) {
+    const task = allTasks.find(t => t.id === id);
+    if (!task) return;
+    const newStatus = task.status === 'done' ? 'pending' : 'done';
+    try {
+        const res = await fetch(`/tasks/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
         });
+        if (!res.ok) throw new Error();
+        task.status = newStatus;
+        renderTasks();
+    } catch { showToast('Could not update task.', true); }
+}
 
+async function deleteTask(id) {
+    if (!confirm('Delete this task?')) return;
+    try {
+        const res = await fetch(`/tasks/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        allTasks = allTasks.filter(t => t.id !== id);
+        renderTasks();
+        showToast('Task deleted.');
+    } catch { showToast('Could not delete task.', true); }
+}
 
-        function showCreate() {
-            document.getElementById('showCreateButton').style.display = 'none';
-            document.getElementById('taskTable').style.display = 'none';
-            document.getElementById('createUpdateForm').style.display = 'block';
+// ── Categories ──
+async function fetchCategories() {
+    try {
+        const res    = await fetch('/categories');
+        if (!res.ok) throw new Error();
+        allCategories = await res.json();
+        renderSidebarCategories();
+        renderCategorySelect();
+    } catch { showToast('Could not load categories.', true); }
+}
 
-            document.getElementById('createLabel').style.display = 'inline';
-            document.getElementById('updateLabel').style.display = 'none';
+function renderSidebarCategories() {
+    const list = document.getElementById('catList');
+    const allLi = `<li class="${activeCatId === 'all' ? 'active' : ''}" data-id="all"
+                       onclick="filterByCategory('all', this)">
+                       <span class="cat-name">All tasks</span>
+                   </li>`;
+    const catItems = allCategories.map(c => `
+        <li class="${String(activeCatId) === String(c.id) ? 'active' : ''}"
+            data-id="${c.id}" onclick="filterByCategory(${c.id}, this)">
+            <span class="cat-name">${escHtml(c.name)}</span>
+            <button class="cat-del" onclick="deleteCategory(event, ${c.id})" title="Remove">×</button>
+        </li>`).join('');
+    list.innerHTML = allLi + catItems;
+}
 
-            document.getElementById('doCreateButton').style.display = 'block';
-            document.getElementById('doUpdateButton').style.display = 'none';
+function renderCategorySelect() {
+    const sel = document.getElementById('fCategory');
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">No category</option>' +
+        allCategories.map(c => `<option value="${c.id}">${escHtml(c.name)}</option>`).join('');
+    if (cur) sel.value = cur;
+}
 
-            clearForm();
+function filterByCategory(id, el) {
+    activeCatId = id;
+    document.querySelectorAll('.cat-list li').forEach(li => li.classList.remove('active'));
+    el.classList.add('active');
+    renderTasks();
+}
+
+async function addCategory() {
+    const input = document.getElementById('newCatInput');
+    const name  = input.value.trim();
+    if (!name) return;
+    try {
+        const res  = await fetch('/categories', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name })
+        });
+        if (!res.ok) throw new Error();
+        const cat = await res.json();
+        allCategories.push(cat);
+        input.value = '';
+        renderSidebarCategories();
+        renderCategorySelect();
+        showToast(`Category "${name}" added.`);
+    } catch { showToast('Could not add category.', true); }
+}
+
+async function deleteCategory(e, id) {
+    e.stopPropagation();
+    if (!confirm('Delete this category? Tasks will become uncategorised.')) return;
+    try {
+        const res = await fetch(`/categories/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        allCategories = allCategories.filter(c => c.id !== id);
+        allTasks.forEach(t => { if (t.category_id === id) { t.category_id = null; t.category_name = null; } });
+        if (String(activeCatId) === String(id)) activeCatId = 'all';
+        renderSidebarCategories();
+        renderCategorySelect();
+        renderTasks();
+        showToast('Category deleted.');
+    } catch { showToast('Could not delete category.', true); }
+}
+
+// ── Modal ──
+function openCreateModal() {
+    document.getElementById('modalTitle').textContent = 'New task';
+    document.getElementById('saveBtn').textContent    = 'Save task';
+    document.getElementById('editId').value      = '';
+    document.getElementById('fTaskName').value   = '';
+    document.getElementById('fDescription').value = '';
+    document.getElementById('fDueDate').value    = '';
+    document.getElementById('fStatus').value     = 'pending';
+    document.getElementById('fCategory').value   = '';
+    renderCategorySelect();
+    document.getElementById('modalOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('fTaskName').focus(), 100);
+}
+
+function openEditModal(id) {
+    const task = allTasks.find(t => t.id === id);
+    if (!task) return;
+    document.getElementById('modalTitle').textContent = 'Edit task';
+    document.getElementById('saveBtn').textContent    = 'Update task';
+    document.getElementById('editId').value       = task.id;
+    document.getElementById('fTaskName').value    = task.task_name || '';
+    document.getElementById('fDescription').value = task.description || '';
+    document.getElementById('fDueDate').value     = task.due_date || '';
+    document.getElementById('fStatus').value      = task.status || 'pending';
+    renderCategorySelect();
+    document.getElementById('fCategory').value    = task.category_id || '';
+    document.getElementById('modalOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('fTaskName').focus(), 100);
+}
+
+function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function closeModalOnOverlay(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+async function saveTask() {
+    const id          = document.getElementById('editId').value;
+    const task_name   = document.getElementById('fTaskName').value.trim();
+    const description = document.getElementById('fDescription').value.trim();
+    const due_date    = document.getElementById('fDueDate').value || null;
+    const status      = document.getElementById('fStatus').value;
+    const category_id = document.getElementById('fCategory').value || null;
+
+    if (!task_name) {
+        document.getElementById('fTaskName').focus();
+        showToast('Task name is required.', true);
+        return;
+    }
+
+    const body    = { task_name, description, due_date, status, category_id };
+    const isEdit  = !!id;
+    const url     = isEdit ? `/tasks/${id}` : '/tasks';
+    const method  = isEdit ? 'PUT' : 'POST';
+
+    try {
+        const res  = await fetch(url, {
+            method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error();
+        const saved = await res.json();
+
+        // Attach category name for display
+        const cat  = allCategories.find(c => String(c.id) === String(category_id));
+        saved.category_name = cat ? cat.name : null;
+
+        if (isEdit) {
+            const idx = allTasks.findIndex(t => t.id === saved.id);
+            if (idx !== -1) allTasks[idx] = saved;
+        } else {
+            allTasks.unshift(saved);
         }
 
-        function showViewAll() {
-            document.getElementById('showCreateButton').style.display = 'block';
-            document.getElementById('taskTable').style.display = 'table';
-            document.getElementById('createUpdateForm').style.display = 'none';
-        }
+        closeModal();
+        renderTasks();
+        showToast(isEdit ? 'Task updated.' : 'Task created.');
+    } catch { showToast('Could not save task.', true); }
+}
 
-        function showUpdate(buttonElement) {
-            document.getElementById('showCreateButton').style.display = 'none';
-            document.getElementById('taskTable').style.display = 'none';
-            document.getElementById('createUpdateForm').style.display = 'block';
+// ── Auth ──
+async function doLogout() {
+    try {
+        await fetch('/api/logout', { method: 'POST' });
+    } finally {
+        window.location.href = '/login';
+    }
+}
 
-            document.getElementById('createLabel').style.display = 'none';
-            document.getElementById('updateLabel').style.display = 'inline';
+// ── Helpers ──
+function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className   = 'toast' + (isError ? ' error' : '');
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+}
 
-            document.getElementById('doCreateButton').style.display = 'none';
-            document.getElementById('doUpdateButton').style.display = 'block';
+function escHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 
-            const rowElement = buttonElement.closest('tr');
-            const task = getTaskFromRow(rowElement);
-            populateFormWithTask(task);
-        }
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const [y, m, d] = dateStr.split('-');
+    return `${d}/${m}/${y}`;
+}
 
-        function doCreate(){
-            const form = document.getElementById('createUpdateForm');
-            const task = {
-                task_name:   form.querySelector('[name="task_name"]').value,
-                description: form.querySelector('[name="description"]').value,
-                due_date:    form.querySelector('[name="due_date"]').value,
-                status:      form.querySelector('[name="status"]').value,
-                category_id: form.querySelector('[name="category_id"]').value || null
-            };
+// Keyboard shortcut: Escape to close modal
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+});
 
-            console.log("Attempting to create task:", JSON.stringify(task, null, 2)); 
-
-            createTaskAjax(task);
-        }
-
-        function doUpdate() {
-            const task = getTaskFromForm();
-            updateTaskAjax(task);
-            setTaskInRow(document.getElementById(task.id), task);
-            clearForm();
-            showViewAll();
-        }
-
-        function doDelete(buttonElement) {
-            const rowElement = buttonElement.closest('tr');
-            const id = rowElement.getAttribute('data-id');
-            deleteTaskAjax(id);
-            rowElement.remove();
-        }
-
-        // --- table helpers ---
-        function addTaskToTable(task) {
-            const tbody = document.querySelector('#taskTable tbody');
-            const row = document.createElement('tr');
-            row.setAttribute('data-id', task.id);
-
-            row.innerHTML = `
-                <td>${task.id}</td>
-                <td>${task.task_name}</td>
-                <td>${task.description || ''}</td>
-                <td>${task.due_date || ''}</td>
-                <td>${task.category_name || 'uncategorised'}</td>
-                <td>${task.status}</td>
-                <td>
-                    <button class="btn btn-table" onclick="showUpdate(this)">Edit</button>
-                    <button class="btn btn-table" onclick="doDelete(this)">Delete</button>
-                </td>
-            `;
-
-            tbody.appendChild(row);
-        }
-
-        function clearForm() {
-            const form = document.getElementById('createUpdateForm');
-            form.querySelector('[name="id"]').value = '';
-            form.querySelector('[name="task_name"]').value = '';
-            form.querySelector('[name="description"]').value = '';
-            form.querySelector('[name="due_date"]').value = '';
-            form.querySelector('[name="status"]').value = 'pending';
-            form.querySelector('[name="category_id"]').value = '';
-        }
-
-        function getTaskFromRow(rowElement) {
-            const cells = rowElement.querySelectorAll('td');
-            return {
-                id:          rowElement.getAttribute('data-id'),
-                task_name:   cells[1].textContent,
-                description: cells[2].textContent,
-                due_date:    cells[3].textContent,
-                category_id: cells[4].getAttribute('data-cat-id') || null,
-                status:      cells[5].textContent
-            };
-        }
-
-        function setTaskInRow(rowElement, task) {
-            const cells = rowElement.querySelectorAll('td');
-            cells[1].textContent = task.task_name;
-            cells[2].textContent = task.description;
-            cells[3].textContent = task.due_date;
-            cells[4].textContent = task.category_name || 'uncategorised';
-            cells[4].setAttribute('data-cat-id', task.category_id || '');
-            cells[5].textContent = task.status;
-        }
-
-        function populateFormWithTask(task) {
-            const form = document.getElementById('createUpdateForm');
-            form.querySelector('[name="id"]').value = task.id;
-            form.querySelector('[name="task_name"]').value = task.task_name;
-            form.querySelector('[name="description"]').value = task.description;
-            form.querySelector('[name="due_date"]').value = task.due_date;
-            form.querySelector('[name="status"]').value = task.status;
-            form.querySelector('[name="category_id"]').value = task.category_id || '';
-        }
-
-        function getTaskFromForm() {
-            const form = document.getElementById('createUpdateForm');
-            return {
-                id:          form.querySelector('[name="id"]').value,
-                task_name:   form.querySelector('[name="task_name"]').value,
-                description: form.querySelector('[name="description"]').value,
-                due_date:    form.querySelector('[name="due_date"]').value,
-                status:      form.querySelector('[name="status"]').value,
-                category_id: form.querySelector('[name="category_id"]').value || null
-            };
-        }
-
-        // --- API calls --- < -- https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch; https://api.jquery.com/jquery.ajax/; https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest -->
-        function getAllAjax() { 
-            $.ajax({
-                url: "/tasks",
-                method: "GET",
-                dataType: "JSON",
-                success: function(result) {
-                    for (const task of result) {
-                        addTaskToTable(task);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.log("error:", status, "msg:", error);
-                }
-            });
-        }
-        
-        function createTaskAjax(task) {
-            $.ajax({
-                url: "/tasks",
-                method: "POST",
-                data: JSON.stringify(task),
-                dataType: "JSON",
-                contentType: "application/json; charset=utf-8",
-                success: function(result) {
-                    task.id = result.id;
-                    addTaskToTable(task);
-                    clearForm();
-                    showViewAll();
-                },
-                error: function(xhr, status, error) {
-                    console.log("error:", status, "msg:", error);
-                }
-            });
-        }
-
-        function updateTaskAjax(task) {
-            $.ajax({
-                url: `/tasks/${encodeURIComponent(task.id)}`,
-                method: "PUT",
-                data: JSON.stringify(task),
-                dataType: "JSON",
-                contentType: "application/json; charset=utf-8",
-                success: function(result) {
-                    console.log("updated:", result);
-                },
-                error: function(xhr, status, error) {
-                    console.log("error:", status, "msg:", error);
-                }
-            });
-        }
-
-        function deleteTaskAjax(id) {
-            $.ajax({
-                url: `/tasks/${encodeURIComponent(id)}`,
-                method: "DELETE",
-                dataType: "JSON",
-                success: function(result) {
-                    console.log("deleted id:", id);
-                },
-                error: function(xhr, status, error) {
-                    console.log("error:", status, "msg:", error);
-                }
-            });
-        }
-
-        getAllAjax();
-    </script>
+init();
+</script>
 </body>
 </html>

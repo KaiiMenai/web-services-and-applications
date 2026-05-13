@@ -171,7 +171,8 @@ The application writes an audit trail to `audit.log`. This records:
 
 #### `no such table: user`
 
-This usually means the database wasn't yet created. Run:
+This usually means the database wasn't yet created.  
+Run:
 
 ```bash
 python createschema.py

@@ -182,6 +182,24 @@ def update(id):
     audit_log.info(f"UPDATE_TASK | user_id={current_user.id} | task_id={id} | name={existing['task_name']}")
     return jsonify(existing)
 
+@app.route('/tasks/<int:id>', methods=['PATCH'])
+@login_required
+def patch(id):
+    existing = taskDAO.findByID(id, current_user.id)
+    if not existing:
+        abort(404)
+    if not request.json:
+        abort(400)
+
+    # Only overwrite fields that were actually sent
+    for field in ('task_name', 'description', 'due_date', 'status', 'category_id'):
+        if field in request.json:
+            existing[field] = request.json[field]
+
+    taskDAO.update(id, existing, current_user.id)
+    audit_log.info(f"PATCH_TASK | user_id={current_user.id} | task_id={id} | fields={list(request.json.keys())}")
+    return jsonify(existing)
+
 @app.route('/tasks/<int:id>', methods=['DELETE']) # In theory, this should mean that other users can't delete what they don't have access to, but on previous testing I was able to delete Admin1's task whilst logged in as Admin2. - possible issue somewhere else. 
 @login_required
 def delete(id):

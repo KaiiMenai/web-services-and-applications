@@ -240,6 +240,9 @@ def deleteCategory(id):
 if __name__ == '__main__':
     app.run(debug=True)
 
+# To run the server, execute this script. It will start a Flask development server:
+# http://127.0.0.1:5000/
+
 # END
 
 # OLD CODE BELOW - KEEP FOR REFERENCE

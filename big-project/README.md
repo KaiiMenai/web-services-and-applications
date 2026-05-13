@@ -1,6 +1,6 @@
 # Project - Web Services and Applications
 
-author: Kyra Menai Hamilton
+## author: Kyra Menai Hamilton
 
 This folder will contain work for the Web Services and Applications module project.
 
@@ -210,14 +210,16 @@ If you deploy it later, add the hosted link here:
 
 - Ensure `SECRET_KEY` is set correctly for secure sessions.
 - Make sure `createschema.py` is run before first use.
-- This repository should contain only this project for submission.
 
-## To do
+#### AI prompt used for the interface
 
-- make it look pretty as it looks a little basic at the moment
+- I would also like to add the option to have tabs on the left of the main page to choose what to view; tasks by person, task categories, tasks completed.
+- I also want to add that if a task is deleted there needs to be a prompt asking the user to input why.
+- I also want user to have the ability to have a check box that marks tasks as complete.
+- If tasks need to be reopened, then a new task is created linking to the old one
 
 ## Known Issues
 
-- Different users are able to delete each others tasks.
+
 
 # END

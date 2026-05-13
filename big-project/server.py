@@ -28,7 +28,7 @@ login_manager.login_view = 'serve_login'
 
 # --- Audit logger setup --- # https://stackoverflow.com/questions/14037975/how-do-i-write-flasks-excellent-debug-log-message-to-a-file-in-production; https://oneuptime.com/blog/post/2026-02-02-flask-logging/view; 
 def setup_audit_logger():    # https://docs.python.org/3/library/logging.handlers.html#logging.handlers.RotatingFileHandler; https://flask.palletsprojects.com/en/stable/logging/
-    logger = logging.getLogger('audit')
+    logger = logging.getLogger('audit') # https://flask.palletsprojects.com/en/stable/logging/
     logger.setLevel(logging.INFO)
     handler = RotatingFileHandler('audit.log', maxBytes=1_000_000, backupCount=5)
     handler.setFormatter(logging.Formatter('%(asctime)s | %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
@@ -57,7 +57,7 @@ def load_user(user_id):
 def index():
     return app.send_static_file('tasksviewer.html')
 
-@app.route('/login')
+@app.route('/login') # https://www.freecodecamp.org/news/how-to-setup-user-authentication-in-flask/; https://oneuptime.com/blog/post/2026-02-02-flask-logging/view
 def serve_login():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
@@ -200,7 +200,7 @@ def patch(id):
     audit_log.info(f"PATCH_TASK | user_id={current_user.id} | task_id={id} | fields={list(request.json.keys())}")
     return jsonify(existing)
 
-@app.route('/tasks/<int:id>', methods=['DELETE']) # In theory, this should mean that other users can't delete what they don't have access to, but on previous testing I was able to delete Admin1's task whilst logged in as Admin2. - possible issue somewhere else. 
+@app.route('/tasks/<int:id>', methods=['DELETE'])  # DELETE is scoped to user_id in taskDAO, so users can only delete 
 @login_required
 def delete(id):
     existing = taskDAO.findByID(id, current_user.id)
@@ -229,7 +229,7 @@ def createCategory():
     return jsonify(cat), 201
 
 
-@app.route('/categories/<int:id>', methods=['DELETE'])
+@app.route('/categories/<int:id>', methods=['DELETE']) 
 @login_required
 def deleteCategory(id):
     categoryDAO.delete(id, current_user.id)
@@ -238,7 +238,7 @@ def deleteCategory(id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True) # https://stackoverflow.com/questions/14037975/how-do-i-write-flasks-excellent-debug-log-message-to-a-file-in-production
 
 # To run the server, execute this script. It will start a Flask development server:
 # http://127.0.0.1:5000/
